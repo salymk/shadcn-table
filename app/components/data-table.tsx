@@ -22,6 +22,7 @@ import { cn } from "~/lib/utils";
 // Helper function to compute pinning styles for columns
 const getPinningStyles = (column: Column<Person>): React.CSSProperties => {
   const isPinned = column.getIsPinned();
+
   return {
     left: isPinned === "left" ? `${column.getStart("left")}px` : undefined,
     right: isPinned === "right" ? `${column.getAfter("right")}px` : undefined,
@@ -145,7 +146,7 @@ export default function DataTable() {
                       <TableHead
                         key={header.id}
                         colSpan={header.colSpan}
-                        className="relative truncate [&[data-pinned][data-last-col]]:border-border data-pinned:bg-muted/90 relative h-10 truncate border-t data-pinned:backdrop-blur-xs [&:not([data-pinned]):has(+[data-pinned])_div.cursor-col-resize:last-child]:opacity-0 [&[data-last-col=left]_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right]:last-child_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=right][data-last-col=right]]:border-l bg-white"
+                        className="truncate [&[data-pinned][data-last-col]]:border-border data-pinned:bg-muted/90 relative h-10 border-t data-pinned:backdrop-blur-xs [&:not([data-pinned]):has(+[data-pinned])_div.cursor-col-resize:last-child]:opacity-0 [&[data-last-col=left]_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right]:last-child_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=right][data-last-col=right]]:border-l bg-white"
                         style={{
                           ...getPinningStyles(column),
                           width: header.getSize(),
@@ -203,7 +204,8 @@ export default function DataTable() {
                           style={{
                             ...getPinningStyles(column),
                             width: cell.column.getSize(),
-                            zIndex: selectedCell === cell.id ? 100 : 0,
+                            zIndex:
+                              selectedCell === cell.id ? 100 : isPinned ? 1 : 0,
                           }}
                           onClick={() => setSelectedCell(cell.id)}
                           data-pinned={isPinned || undefined}
