@@ -197,9 +197,11 @@ export default function DataTable() {
                         <TableCell
                           key={cell.id}
                           className={cn(
-                            "[&[data-pinned][data-last-col]]:border-border data-pinned:bg-background/90 data-pinned:backdrop-blur-xs [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right][data-last-col=right]]:border-l bg-white cursor-pointer border border-transparent hover:border-blue-500 hover:bg-blue-50",
+                            "[&[data-pinned][data-last-col]]:border-border data-pinned:bg-background/90 data-pinned:backdrop-blur-xs [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right][data-last-col=right]]:border-l bg-white",
+                            cell.column.id !== "select" &&
+                              "cursor-pointer border border-transparent hover:border-blue-500 hover:bg-blue-50",
                             selectedCell === cell.id &&
-                              "!border-blue-500 !border-[1px] hover:bg-white bg-white scale-[1.3] z-50 transition-transform"
+                              "!border-blue-500 !border-[1px] hover:bg-white bg-white scale-[1.2] z-50 transition-transform"
                           )}
                           style={{
                             ...getPinningStyles(column),
@@ -207,7 +209,10 @@ export default function DataTable() {
                             zIndex:
                               selectedCell === cell.id ? 100 : isPinned ? 1 : 0,
                           }}
-                          onClick={() => setSelectedCell(cell.id)}
+                          onClick={() =>
+                            cell.column.id !== "select" &&
+                            setSelectedCell(cell.id)
+                          }
                           data-pinned={isPinned || undefined}
                           data-last-col={
                             isLastLeftPinned
