@@ -7,11 +7,13 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { makeData, type Person } from "../makeData";
+import { EditableCell } from "./editable-cell";
 
 import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -64,40 +66,44 @@ const columns: ColumnDef<Person>[] = [
   },
   {
     accessorKey: "firstName",
-    cell: (info) => info.getValue(),
+    cell: (props) => <EditableCell cell={props.cell} row={props.row} />,
     footer: (props) => props.column.id,
   },
   {
     accessorFn: (row) => row.lastName,
     id: "lastName",
-    cell: (info) => info.getValue(),
+    cell: (props) => <EditableCell cell={props.cell} row={props.row} />,
     header: () => <span>Last Name</span>,
     footer: (props) => props.column.id,
   },
   {
     accessorKey: "age",
     header: () => "Age",
+    cell: (props) => <EditableCell cell={props.cell} row={props.row} />,
     footer: (props) => props.column.id,
   },
   {
     accessorKey: "visits",
     header: () => <span>Visits</span>,
+    cell: (props) => <EditableCell cell={props.cell} row={props.row} />,
     footer: (props) => props.column.id,
   },
   {
     accessorKey: "status",
     header: "Status",
+    cell: (props) => <EditableCell cell={props.cell} row={props.row} />,
     footer: (props) => props.column.id,
   },
   {
     accessorKey: "progress",
     header: "Profile Progress",
+    cell: (props) => <EditableCell cell={props.cell} row={props.row} />,
     footer: (props) => props.column.id,
   },
 ];
 
 export default function DataTable() {
-  const data = React.useMemo(() => makeData(20), []);
+  const [data, setData] = React.useState(() => makeData(20));
   const [selectedCell, setSelectedCell] = React.useState<string | null>(null);
 
   const table = useReactTable({
@@ -111,6 +117,21 @@ export default function DataTable() {
     enableColumnResizing: true,
     columnResizeMode: "onChange",
     getCoreRowModel: getCoreRowModel(),
+    meta: {
+      updateData: (rowIndex: number, columnId: string, value: unknown) => {
+        setData((old) =>
+          old.map((row, index) => {
+            if (index === rowIndex) {
+              return {
+                ...old[rowIndex],
+                [columnId]: value,
+              };
+            }
+            return row;
+          })
+        );
+      },
+    },
   });
 
   React.useEffect(() => {
@@ -197,7 +218,7 @@ export default function DataTable() {
                         <TableCell
                           key={cell.id}
                           className={cn(
-                            "[&[data-pinned][data-last-col]]:border-border data-pinned:bg-background/90 data-pinned:backdrop-blur-xs [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right][data-last-col=right]]:border-l bg-white",
+                            "p-2 [&[data-pinned][data-last-col]]:border-border data-pinned:bg-background/90 data-pinned:backdrop-blur-xs [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right][data-last-col=right]]:border-l bg-white",
                             cell.column.id !== "select" &&
                               "cursor-pointer border border-transparent hover:border-blue-500 hover:bg-blue-50",
                             selectedCell === cell.id &&
